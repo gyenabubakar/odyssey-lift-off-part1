@@ -1,33 +1,33 @@
-const {gql} = require('apollo-server');
+const {ApolloServer} = require('apollo-server')
+const typeDefs = require('./schema')
 
-const typeDefs = gql`
-    type Query {
-        "Tracks list for home page."
-        tracksForHome: [Track!]!
-    }
+const mocks = {
+    Query: () => ({
+        tracksForHome: () => [...new Array(6)]
+    }),
+    Track: () => ({
+        id: () => 'track_01',
+        title: () => 'Astro Kitty, Space Explorer',
+        author: () => {
+            return {
+                name: 'Grumpy Cat',
+                photo:
+                    'https://res.cloudinary.com/dety84pbu/image/upload/v1606816219/kitty-veyron-sm_mctf3c.jpg',
+            };
+        },
+        thumbnail: () =>
+            'https://res.cloudinary.com/dety84pbu/image/upload/v1598465568/nebula_cat_djkt9r.jpg',
+        length: () => 1210,
+        modulesCount: () => 6,
+    }),
+};
 
-    "A track is a group of modules that teaches about a specific topic."
-    type Track {
-        id: ID!
-        "Title of a track."
-        title: String!
-        "Photo URL of a track."
-        thumbnail: String
-        "Approximate number of minutes modules take to complete."
-        length: Int
-        "Number of modules in a track."
-        modulesCount: Int
-        "User who created a track."
-        author: Author!
-    }
+const server = new ApolloServer({typeDefs, mocks});
 
-    type Author {
-        id: ID!
-        "First and last names of author."
-        name: String!
-        "Author's photo URL."
-        photo: String
-    }
-`;
-
-module.exports = typeDefs;
+server.listen().then(() => {
+    console.log(`
+        🚀  Server is running!
+        🔉  Listening on port 4000
+        📭  Query at https://studio.apollographql.com/dev
+    `)
+});
